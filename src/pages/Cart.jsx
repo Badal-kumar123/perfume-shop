@@ -100,16 +100,16 @@ export default function Cart() {
         <p className="text-xl mt-2 font-bold">Grand Total: <span className="text-green-600">${grandTotal.toFixed(2)}</span></p>
 
         {/* 🧹 Buttons */}
-        <div className="mt-6">
+        <div className=" mt-6  ">
           <button
             onClick={clearCart}
-            className="mr-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="mr-4 mb-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600  "
           >
             Clear Cart
           </button>
           <button
             onClick={() => navigate('/checkout')}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="px-4 py-2  bg-green-600 text-white rounded hover:bg-green-700 "
           >
             Proceed to Checkout
           </button>
