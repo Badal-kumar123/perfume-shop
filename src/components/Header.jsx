@@ -14,7 +14,6 @@ export default function Header() {
   const [avatar, setAvatar] = useState(null);
   const [showHeader, setShowHeader] = useState(true);
 
-  // ✅ Navbar show/hide on scroll
   useEffect(() => {
     let lastScrollY = window.scrollY;
     const handleScroll = () => {
@@ -29,32 +28,22 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ Avatar sync with localStorage
   useEffect(() => {
-  const updateAvatar = () => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    if (userData?.avatar) {
-      setAvatar(userData.avatar);
-    } else {
-      setAvatar(null);
-    }
-  };
+    const updateAvatar = () => {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      setAvatar(userData?.avatar || null);
+    };
 
-  updateAvatar(); // run initially
+    updateAvatar();
+    window.addEventListener("storage", updateAvatar);
+    const interval = setInterval(updateAvatar, 1000);
 
-  // Listen to changes from other tabs/windows
-  window.addEventListener("storage", updateAvatar);
+    return () => {
+      window.removeEventListener("storage", updateAvatar);
+      clearInterval(interval);
+    };
+  }, []);
 
-  // You can also optionally poll for changes every few seconds if needed:
-  const interval = setInterval(updateAvatar, 1000);
-
-  return () => {
-    window.removeEventListener("storage", updateAvatar);
-    clearInterval(interval);
-  };
-}, []);
-
-  // ✅ Theme toggle
   useEffect(() => {
     const html = document.documentElement;
     if (darkMode) {
@@ -141,34 +130,43 @@ export default function Header() {
               )}
             </button>
 
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg py-2 z-50">
-                <Link to="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  My Profile
-                </Link>
-                <Link to="/orders" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  My Orders
-                </Link>
-                <Link to="/about" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  About
-                </Link>
-                <Link to="/signup" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  Signup
-                </Link>
-                <Link to="/login" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  Login
-                </Link>
-                <button
-                  onClick={() => {
-                    localStorage.clear();
-                    window.location.href = "/login";
-                  }}
-                  className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+            <AnimatePresence>
+              {dropdownOpen && (
+                <motion.div
+                  key="dropdown"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 24 }}
+                  className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg py-2 z-50"
                 >
-                  Logout
-                </button>
-              </div>
-            )}
+                  <Link to="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    My Profile
+                  </Link>
+                  <Link to="/orders" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    My Orders
+                  </Link>
+                  <Link to="/about" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    About
+                  </Link>
+                  <Link to="/signup" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Signup
+                  </Link>
+                  <Link to="/login" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Login
+                  </Link>
+                  <button
+                    onClick={() => {
+                      localStorage.clear();
+                      window.location.href = "/login";
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Logout
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </nav>
 
@@ -186,7 +184,7 @@ export default function Header() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="md:hidden flex flex-col px-6 pb-4 gap-1 bg-white dark:bg-gray-900 shadow-md"
           >
             <div className="flex items-center gap-3 py-2">
@@ -210,11 +208,17 @@ export default function Header() {
               </NavLink>
             </div>
 
-            <NavLink to="/" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Home</NavLink>
-            <NavLink to="/products" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Products</NavLink>
-            <NavLink to="/cart" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Cart</NavLink>
-            <NavLink to="/favorites" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Favorites</NavLink>
-            <NavLink to="/orders" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Orders</NavLink>
+            {navLinks.map(({ label, path }, idx) => (
+              <NavLink
+                key={idx}
+                to={path}
+                onClick={() => setOpen(false)}
+                className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600"
+              >
+                {label}
+              </NavLink>
+            ))}
+
             <NavLink to="/signup" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Signup</NavLink>
             <NavLink to="/login" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Login</NavLink>
             <NavLink to="/about" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">About</NavLink>
