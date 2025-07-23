@@ -3,7 +3,7 @@ import products from '../data/products';
 import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 import HomeShowcase from '../components/HomeShowcase';
-
+import HeroSection from "../components/HeroSection";
 export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -23,17 +23,9 @@ export default function Home() {
 
   return (
     <div>
-      {/* Hero section */}
-      <motion.h1
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-5xl font-bold text-center"
-      >
-        <section className="bg-hero-pattern bg-center bg-cover h-64 flex items-center justify-center text-black text-4xl font-bold">
-          Discover Your Signature Scent
-        </section>
-      </motion.h1>
+      
+       
+      <HeroSection />
 
       {/* Showcase Section */}
       <HomeShowcase />
