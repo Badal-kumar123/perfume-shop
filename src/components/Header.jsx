@@ -12,40 +12,49 @@ export default function Header() {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [avatar, setAvatar] = useState(null);
-
-  // 👇 Scroll-based show/hide header
   const [showHeader, setShowHeader] = useState(true);
+
+  // ✅ Navbar show/hide on scroll
   useEffect(() => {
     let lastScrollY = window.scrollY;
-
     const handleScroll = () => {
       if (window.scrollY > lastScrollY && window.scrollY > 50) {
-        setShowHeader(false); // Scroll down -> hide
+        setShowHeader(false);
       } else {
-        setShowHeader(true); // Scroll up -> show
+        setShowHeader(true);
       }
       lastScrollY = window.scrollY;
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ✅ Avatar sync with localStorage
   useEffect(() => {
-    const savedAvatar = localStorage.getItem("avatar");
-    if (savedAvatar) {
-      setAvatar(savedAvatar);
+  const updateAvatar = () => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (userData?.avatar) {
+      setAvatar(userData.avatar);
+    } else {
+      setAvatar(null);
     }
-  }, []);
+  };
 
-  const navLinks = [
-    { label: "Home", path: "/" },
-    { label: "Products", path: "/products" },
-    { label: "Cart", path: "/cart" },
-    { label: "Favorites", path: "/favorites" },
-    { label: "Orders", path: "/orders" },
-  ];
+  updateAvatar(); // run initially
 
+  // Listen to changes from other tabs/windows
+  window.addEventListener("storage", updateAvatar);
+
+  // You can also optionally poll for changes every few seconds if needed:
+  const interval = setInterval(updateAvatar, 1000);
+
+  return () => {
+    window.removeEventListener("storage", updateAvatar);
+    clearInterval(interval);
+  };
+}, []);
+
+  // ✅ Theme toggle
   useEffect(() => {
     const html = document.documentElement;
     if (darkMode) {
@@ -57,6 +66,14 @@ export default function Header() {
     }
   }, [darkMode]);
 
+  const navLinks = [
+    { label: "Home", path: "/" },
+    { label: "Products", path: "/products" },
+    { label: "Cart", path: "/cart" },
+    { label: "Favorites", path: "/favorites" },
+    { label: "Orders", path: "/orders" },
+  ];
+
   return (
     <header
       className={`sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-md transition-transform duration-300 ${
@@ -64,7 +81,6 @@ export default function Header() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
         <motion.div
           whileHover={{ scale: 1.03 }}
           transition={{ type: "spring", stiffness: 300 }}
@@ -83,7 +99,6 @@ export default function Header() {
           </NavLink>
         </motion.div>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex gap-6 items-center">
           {navLinks.map(({ label, path }, idx) => (
             <NavLink
@@ -101,7 +116,6 @@ export default function Header() {
             </NavLink>
           ))}
 
-          {/* 🌙 Dark Mode */}
           <div className="flex items-center gap-1 pl-2 border-l border-gray-300 dark:border-gray-600 ml-2">
             <label className="flex items-center gap-2 cursor-pointer">
               🌙
@@ -114,7 +128,6 @@ export default function Header() {
             </label>
           </div>
 
-          {/* 👤 Avatar */}
           <div className="relative">
             <button onClick={() => setDropdownOpen((prev) => !prev)}>
               {avatar ? (
@@ -130,46 +143,24 @@ export default function Header() {
 
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg py-2 z-50">
-                <Link
-                  to="/profile"
-                  onClick={() => setDropdownOpen(false)}
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <Link to="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                   My Profile
                 </Link>
-                <Link
-                  to="/orders"
-                  onClick={() => setDropdownOpen(false)}
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <Link to="/orders" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                   My Orders
                 </Link>
-                <Link
-                  to="/about"
-                  onClick={() => setDropdownOpen(false)}
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <Link to="/about" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                   About
                 </Link>
-                <Link
-                  to="/signup"
-                  onClick={() => setDropdownOpen(false)}
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <Link to="/signup" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                   Signup
                 </Link>
-                <Link
-                  to="/login"
-                  onClick={() => setDropdownOpen(false)}
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <Link to="/login" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                   Login
                 </Link>
                 <button
                   onClick={() => {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("avatar");
-                    localStorage.removeItem("user");
+                    localStorage.clear();
                     window.location.href = "/login";
                   }}
                   className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -181,7 +172,6 @@ export default function Header() {
           </div>
         </nav>
 
-        {/* Mobile Toggle */}
         <button
           onClick={() => setOpen(!open)}
           className="md:hidden text-gray-800 dark:text-gray-100 text-2xl"
@@ -190,7 +180,6 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Mobile Nav */}
       <AnimatePresence>
         {open && (
           <motion.nav
@@ -198,52 +187,59 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden flex flex-col items-end px-6 pb-4 gap-1 bg-white dark:bg-gray-900 shadow-md"
+            className="md:hidden flex flex-col px-6 pb-4 gap-1 bg-white dark:bg-gray-900 shadow-md"
           >
-            {[...navLinks, { label: "About", path: "/about" }].map(
-              ({ label, path }, idx) => (
-                <NavLink
-                  key={idx}
-                  to={path}
-                  onClick={() => setOpen(false)}
-                  className={({ isActive }) =>
-                    `block w-full text-right text-base py-2 transition duration-200 ${
-                      isActive
-                        ? "text-blue-600 font-semibold"
-                        : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
-                    }`
-                  }
-                >
-                  {label}
-                </NavLink>
-              )
-            )}
-
-            {/* 🌙 Dark Toggle */}
-            <div className="flex items-center justify-end w-full pr-1 gap-2 pt-2">
-              <label className="text-sm text-gray-700 dark:text-gray-300">
-                🌙
-              </label>
-              <input
-                type="checkbox"
-                checked={darkMode}
-                onChange={() => setDarkMode(!darkMode)}
-                className="w-5 h-5 accent-blue-600"
-              />
-            </div>
-
-            {/* 👤 Avatar in Mobile */}
-            <Link to="/profile" onClick={() => setOpen(false)} className="pt-2">
+            <div className="flex items-center gap-3 py-2">
               {avatar ? (
                 <img
                   src={avatar}
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover border border-gray-300"
+                  alt="User Avatar"
+                  className="w-8 h-8 rounded-full object-cover"
                 />
               ) : (
-                <UserCircle className="w-8 h-8 text-gray-600 dark:text-white" />
+                <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xl">
+                  👤
+                </div>
               )}
-            </Link>
+              <NavLink
+                to="/profile"
+                onClick={() => setOpen(false)}
+                className="text-base font-semibold text-gray-800 dark:text-gray-200 hover:text-blue-500"
+              >
+                My Profile
+              </NavLink>
+            </div>
+
+            <NavLink to="/" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Home</NavLink>
+            <NavLink to="/products" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Products</NavLink>
+            <NavLink to="/cart" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Cart</NavLink>
+            <NavLink to="/favorites" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Favorites</NavLink>
+            <NavLink to="/orders" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Orders</NavLink>
+            <NavLink to="/signup" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Signup</NavLink>
+            <NavLink to="/login" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">Login</NavLink>
+            <NavLink to="/about" onClick={() => setOpen(false)} className="py-2 text-base text-gray-800 dark:text-gray-200 hover:text-blue-600">About</NavLink>
+
+            <div className="flex items-center justify-between pt-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-700 dark:text-gray-300">🌙</span>
+                <input
+                  type="checkbox"
+                  checked={darkMode}
+                  onChange={() => setDarkMode(!darkMode)}
+                  className="w-5 h-5 accent-blue-600"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  localStorage.clear();
+                  setOpen(false);
+                  window.location.href = "/login";
+                }}
+                className="text-sm px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </div>
           </motion.nav>
         )}
       </AnimatePresence>
