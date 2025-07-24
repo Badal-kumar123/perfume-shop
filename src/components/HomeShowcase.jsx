@@ -1,4 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/effect-fade';
+import 'swiper/css/pagination';
+import { motion } from 'framer-motion';
 
 const brandImages = [
   '/images/brand1.jpg',
@@ -13,50 +18,73 @@ const upcomingPerfumes = [
 ];
 
 export default function HomeShowcase() {
-  const [brandIndex, setBrandIndex] = useState(0);
-  const [perfumeIndex, setPerfumeIndex] = useState(0);
-
-  // Auto-slide every 5 seconds
-  useEffect(() => {
-    const brandTimer = setInterval(() => {
-      setBrandIndex((prev) => (prev + 1) % brandImages.length);
-    }, 5000);
-
-    const perfumeTimer = setInterval(() => {
-      setPerfumeIndex((prev) => (prev + 1) % upcomingPerfumes.length);
-    }, 5000);
-
-    return () => {
-      clearInterval(brandTimer);
-      clearInterval(perfumeTimer);
-    };
-  }, []);
-
   return (
-    <section className="max-w-7xl mx-auto my-12 px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
-      {/* Left: Brand Collaboration */}
-      <div className="rounded-lg overflow-hidden shadow-lg relative h-64 md:h-96">
-        <img
-          src={brandImages[brandIndex]}
-          alt="Brand Collaboration"
-          className="w-full h-full object-cover transition-opacity duration-700"
-        />
-        <div className="absolute bottom-0 bg-black bg-opacity-50 text-white p-4 text-lg">
-          🤝 Brand Collaboration
-        </div>
-      </div>
+    <section className="max-w-7xl mx-auto my-16 px-4 grid grid-cols-1 md:grid-cols-2 gap-10">
+      
+      {/* Brand Collaboration Swiper */}
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7 }}
+        viewport={{ once: true }}
+        className="relative rounded-lg overflow-hidden shadow-xl"
+      >
+        <Swiper
+          modules={[Autoplay, EffectFade, Pagination]}
+          autoplay={{ delay: 4000 }}
+          effect="fade"
+          loop={true}
+          pagination={{ clickable: true }}
+          className="h-72 md:h-96"
+        >
+          {brandImages.map((img, idx) => (
+            <SwiperSlide key={idx}>
+              <img
+                src={img}
+                alt={`Brand ${idx}`}
+                className="w-full h-full object-cover"
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+       <div className="absolute top-4 left-4 z-20 bg-black/70 backdrop-blur text-white px-4 py-2 rounded-md shadow-md text-base md:text-lg">
+  🤝 Brand Collaboration
+</div>
 
-      {/* Right: Upcoming Perfumes */}
-      <div className="rounded-lg overflow-hidden shadow-lg relative h-64 md:h-96">
-        <img
-          src={upcomingPerfumes[perfumeIndex]}
-          alt="Upcoming Perfume"
-          className="w-full h-full object-cover transition-opacity duration-700"
-        />
-        <div className="absolute bottom-0 bg-black bg-opacity-50 text-white p-4 text-lg">
-          🚀 Upcoming Perfume
-        </div>
-      </div>
+
+      </motion.div>
+
+      {/* Upcoming Perfume Swiper */}
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7 }}
+        viewport={{ once: true }}
+        className="relative rounded-lg overflow-hidden shadow-xl"
+      >
+        <Swiper
+          modules={[Autoplay, EffectFade, Pagination]}
+          autoplay={{ delay: 4000 }}
+          effect="fade"
+          loop={true}
+          pagination={{ clickable: true }}
+          className="h-72 md:h-96"
+        >
+          {upcomingPerfumes.map((img, idx) => (
+            <SwiperSlide key={idx}>
+              <img
+                src={img}
+                alt={`Upcoming ${idx}`}
+                className="w-full h-full object-cover"
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        <div className="absolute top-4 left-4 z-20 bg-black/70 backdrop-blur text-white px-4 py-2 rounded-md shadow-md text-base md:text-lg">
+  🚀 Upcoming Perfume
+</div>
+
+      </motion.div>
     </section>
   );
 }
