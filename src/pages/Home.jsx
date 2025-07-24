@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 import HomeShowcase from '../components/HomeShowcase';
 import HeroSection from "../components/HeroSection";
+import HomeTestimonials from "../components/HomeTestimonials";
+
 export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -70,6 +72,7 @@ export default function Home() {
           </div>
         </div>
       )}
+      <HomeTestimonials />
     </div>
   );
 }
