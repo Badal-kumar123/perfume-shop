@@ -97,51 +97,99 @@ export default function ProductDetail() {
       </div>
 
       {/* Customer Reviews */}
-      <div className="mt-10">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xl font-bold">Customer Reviews</h3>
-          <button
-            onClick={() => setShowCommentBox(!showCommentBox)}
-            className="text-blue-600 hover:text-green-600 transition"
-            title="Add a comment"
-          >
-            <FaCommentDots className="text-2xl" />
-          </button>
-        </div>
+      
+<div className="mt-10">
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="text-xl font-bold">Customer Reviews</h3>
+    <button
+      onClick={() => setShowCommentBox(!showCommentBox)}
+      className="text-blue-600 hover:text-green-600 transition"
+      title="Add a comment"
+    >
+      <FaCommentDots className="text-2xl" />
+    </button>
+  </div>
 
-        {showCommentBox && (
-          <div className="mb-6">
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Write your review..."
-              className="w-full p-3 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-              rows={3}
+  {showCommentBox && (
+    <div className="mb-6">
+      <textarea
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+        placeholder="Write your review..."
+        className="w-full p-3 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+        rows={3}
+      />
+      <button
+        onClick={() => {
+          if (newComment.trim()) {
+            setAllComments([newComment, ...allComments].slice(0, 3));
+            setNewComment("");
+            setShowCommentBox(false);
+            toast.success("Review submitted!");
+          }
+        }}
+        className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+      >
+        Submit
+      </button>
+    </div>
+  )}
+
+  <ul className="space-y-4">
+    {allComments.slice(0, 3).map((comment, idx) => {
+      const reviewers = [
+        {
+          name: "Neha Verma",
+          country: "🇮🇳 India",
+          avatar: "https://randomuser.me/api/portraits/women/67.jpg",
+          rating: 4.5,
+        },
+        {
+          name: "Anil Kapoor",
+          country: "🇺🇸 USA",
+          avatar: "https://randomuser.me/api/portraits/men/36.jpg",
+          rating: 5,
+        },
+        {
+          name: "Sara Smith",
+          country: "🇬🇧 UK",
+          avatar: "https://randomuser.me/api/portraits/women/45.jpg",
+          rating: 4,
+        },
+      ];
+      const reviewer = reviewers[idx % reviewers.length];
+
+      return (
+        <motion.li
+          key={idx}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: idx * 0.1 }}
+          className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm dark:bg-[#1e1e1e] dark:border-gray-700"
+        >
+          <div className="flex items-center mb-2">
+            <img
+              src={reviewer.avatar}
+              alt={reviewer.name}
+              className="w-10 h-10 rounded-full mr-3 object-cover border border-gray-300"
             />
-            <button
-              onClick={() => {
-                if (newComment.trim()) {
-                  setAllComments([newComment, ...allComments].slice(0, 3));
-                  setNewComment("");
-                  setShowCommentBox(false); // ✅ This line hides the comment box
-                  toast.success("Review submitted!");
-                }
-              }}
-              className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-            >
-              Submit
-            </button>
+            <div>
+              <p className="font-semibold text-gray-800 dark:text-white">{reviewer.name}</p>
+              <span className="text-sm text-gray-500">{reviewer.country}</span>
+            </div>
           </div>
-        )}
+          <div className="flex items-center mb-1 text-yellow-400">
+            {renderStars(reviewer.rating)}
+          </div>
+          <p className="text-gray-700 dark:text-gray-300 text-sm">{comment}</p>
+        </motion.li>
+      );
+    })}
+  </ul>
+</div>
 
-        <ul className="space-y-2">
-          {allComments.slice(0, 3).map((comment, idx) => (
-            <li key={idx} className="bg-gray-100 p-3 rounded shadow-sm">
-              {comment}
-            </li>
-          ))}
-        </ul>
-      </div>
+
 
       {/* Recommended Products */}
       <div className="mt-14">
