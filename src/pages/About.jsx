@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaInstagram, FaGithub, FaLinkedin } from 'react-icons/fa';
+import AboutTestimonials from "../components/AboutTestimonials";
+
 
 export default function About() {
   return (
@@ -85,6 +87,8 @@ export default function About() {
       </motion.div>
 
       {/* Social Links */}
+      
+      <AboutTestimonials />
       <div className="mt-12 flex justify-center space-x-6 text-2xl text-blue-600">
         <a href="https://instagram.com/" target="_blank" rel="noreferrer">
           <FaInstagram />
@@ -96,6 +100,7 @@ export default function About() {
           <FaLinkedin />
         </a>
       </div>
+
     </div>
   );
 }
